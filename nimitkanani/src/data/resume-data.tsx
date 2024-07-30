@@ -139,34 +139,58 @@ export const RESUME_DATA = {
         "Matplotlib"
       ],
       description: "Built and trained an LSTM model on historical time-series data for the Nasdaq Tech 100 Index, using exogenous variables to predict the future trajectory of the index under various possible economic scenarios.",
+      link: {
+        label: "",
+        href: "",
+      }
     },
     {
       title: "Segmentation of sidewalks in satellite imagery by finetuning SAM",
       techStack: ["PyTorch", "OpenCV", "NumPy"],
       description:
       "Built an image segmentation model on top of the Segment Anything Model(SAM) to segment sidewalks in satellite images, and used Hidden Markov Models(HMM) to connect segments separated by Occlusion.",
+      link: {
+        label: "",
+        href: "",
+      }
     },
     {
       title: "Distributed Processing and Insights Generation from NYC Taxi Data",
       techStack: ["Apache Spark", "Pandas", "Hadoop"],
       description:
         " Leveraged PySpark on a distributed Hadoop cluster to perform large-scale data cleaning and analysis of NYC taxi trip records. Identified and addressed data quality issues, and generated actionable insights.",
+      link: {
+        label: "",
+        href: "",
+      }
     },
     {
       title: "Searching for similar objects across videos using CNNs and Vector Database",
       techStack: ["Postgres Vector Database", "PyTorch", "OpenCV"],
       description:
         "Generated embeddings of objects detected from YouTube videos by Faster RCNN by training an encoder on MS COCO dataset objects and used PostgreSQL vector database to search for similar objects across videos.",
+      link: {
+        label: "",
+        href: "",
+      }
     },
     {
       title: "Enhanced Multi-Object Trajectory Tracking in Drone Footage using Kalman Filters",
       techStack: ["PyTorch", "OpenCV"],
-      description: "Trained YOLOv8 model on VisDrone dataset and leveraged Kalman filters to track the trajectory of cars, and bicycles in moving drone footage."
+      description: "Trained YOLOv8 model on VisDrone dataset and leveraged Kalman filters to track the trajectory of cars, and bicycles in moving drone footage.",
+      link: {
+        label: "",
+        href: "",
+      }
    }, 
    {
     title: "Evaluation of Development Data Deprivation Across Country Income Levels",
     techStack: ["PySpark", "Hadoop"],
-    description: "Analyzed Development Data availability across distinct national income groups by utilizing the World Development Indicators (WDI) dataset, and identified discernible trends pointing to heightened data deprivation in low-income countries in critical development domains."
+    description: "Analyzed Development Data availability across distinct national income groups by utilizing the World Development Indicators (WDI) dataset, and identified discernible trends pointing to heightened data deprivation in low-income countries in critical development domains.",
+    link: {
+      label: "",
+      href: "",
+    }
    }
   ],
 } as const;
