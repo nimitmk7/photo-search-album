@@ -78,6 +78,7 @@ export const RESUME_DATA = {
     },
     {
       company: "New York University",
+      link: "https://www.nyu.edu/",
       badges: ["Deep Learning"],
       title: "Graduate Research Assistant",
       start: "October 2023",
