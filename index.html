@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Photo Search Album</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .upload-section, .search-section {
+            margin-bottom: 20px;
+        }
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .photo-result {
+            max-width: 200px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .photo-result img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Photo Search Album</h1>
+        
+        <div class="upload-section">
+            <h2>Upload Photo</h2>
+            <input type="file" id="photoFile" accept="image/*">
+            <input type="text" id="customLabels" placeholder="Custom Labels (comma-separated)">
+            <button onclick="uploadPhoto()">Upload Photo</button>
+        </div>
+        
+        <div class="search-section">
+            <h2>Search Photos</h2>
+            <input type="text" id="searchQuery" placeholder="Enter search terms">
+            <button onclick="searchPhotos()">Search</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="./sdk/lib/axios/dist/axios.standalone.js"></script>
+    <script src="./sdk/lib/CryptoJS/rollups/crypto-js.js"></script>
+    <script src="./sdk/lib/CryptoJS/rollups/sha256.js"></script>
+    <script src="./sdk/lib/CryptoJS/components/hmac.js"></script>
+    <script src="./sdk/lib/CryptoJS/components/enc-base64.js"></script>
+    <script src="./sdk/lib/url-template/url-template.js"></script>
+    <script src="./sdk/lib/apiGatewayCore/sigV4Client.js"></script>
+    <script src="./sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
+    <script src="./sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
+    <script src="./sdk/lib/apiGatewayCore/utils.js"></script>
+
+    <script src="./sdk/apigClient.js"></script>
+    <script>
+        // Initialize API Gateway Client
+        const apigClient = apigClientFactory.newClient();
+
+        async function uploadPhoto() {
+            const fileInput = document.getElementById('photoFile');
+            const customLabelsInput = document.getElementById('customLabels');
+            
+            if (!fileInput.files.length) {
+                alert('Please select a photo to upload');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const customLabels = customLabelsInput.value.trim();
+
+            try {
+
+                // Prepare request parameters
+                const params = {
+                    'bucket': 'nmk9441-photos',
+                    'key': file.name,
+                    'x-amz-meta-customlabels': customLabels, // Pass custom labels here
+                    'Content-Type': file.type
+                };
+
+                
+                const additionalParams = {
+                    headers: {
+                        'Content-Type': file.type,
+                        'x-amz-meta-customlabels': customLabels,
+                    }
+                };
+
+                // Upload photo using SDK
+                const result = await apigClient.uploadPut(
+                    params, 
+                    file, 
+                    additionalParams
+                );
+
+                console.log(result);
+
+                alert('Photo uploaded successfully!');
+                // Clear inputs
+                fileInput.value = '';
+                customLabelsInput.value = '';
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Failed to upload photo');
+            }
+        }
+    
+
+        async function searchPhotos() {
+    const searchQueryInput = document.getElementById('searchQuery');
+    const resultsDiv = document.getElementById('results');
+    
+    const query = searchQueryInput.value.trim();
+    if (!query) {
+        alert('Please enter a search term');
+        return;
+    }
+
+    try {
+        // Search photos using SDK
+        const result = await apigClient.searchGet({ q: query });
+        console.log('Raw API Response:', result.data);
+
+        // Parse the response body
+        const photos = JSON.parse(result.data.body); // Parse the body JSON string into an array
+        console.log('Parsed Photos:', photos);
+
+        // Clear previous results
+        resultsDiv.innerHTML = '';
+
+        // Display results
+        if (photos.length === 0) {
+            resultsDiv.innerHTML = '<p>No photos found</p>';
+            return;
+        }
+
+        photos.forEach(photo => {
+            const photoDiv = document.createElement('div');
+            photoDiv.className = 'photo-result';
+
+            // Add the photo
+            const img = document.createElement('img');
+            img.src = photo.url; // Use the `url` field for the photo
+            img.alt = 'Uploaded Photo';
+
+            // Add the labels
+            const labelP = document.createElement('p');
+            labelP.textContent = `Labels: ${photo.labels.join(', ')}`; // Join the labels array
+
+            // Append to the result container
+            photoDiv.appendChild(img);
+            photoDiv.appendChild(labelP);
+            resultsDiv.appendChild(photoDiv);
+        });
+    } catch (error) {
+        console.error('Search error:', error);
+        alert('Failed to search photos');
+    }
+}
+
+
+    </script>
+</body>
+</html>
